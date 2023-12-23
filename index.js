@@ -12,6 +12,7 @@ function multiply (a, b) {
 }
 
 function divide (a, b) {
+    if (b === 0) return alert('DO NOT DIVIDE BY ZERO!!!!!!!!!!!!!');
     return a / b;
 }
 
@@ -21,10 +22,9 @@ function operate(operator, firstNumber, secondNumber) {
 }
 
 // global variables
-let firstNumber = 0;
+let firstNumber = null;
 let operator = '';
-let secondNumber = 0;
-let operatorPressed = false;
+let secondNumber = null;
 
 // function to bind the numberic button presses
 function bindNumericButton (num) {
@@ -45,20 +45,20 @@ function bindNumericButton (num) {
     button.addEventListener('click', (e) => {
         let result = document.querySelector('#result');
         let currentResult = result.innerHTML;
-        if (!operatorPressed) {
-            if (currentResult != 0) {
-                firstNumber = parseInt(currentResult + num.toString());
-            } else {
-                firstNumber = num;
-            }
-            result.innerHTML = firstNumber;
-        } else {
-            if (currentResult != 0) {
-                secondNumber = parseInt(currentResult + num.toString());
-            } else {
-                secondNumber = num;
-            }
-            result.innerHTML = secondNumber;
+        // when numbers are null, first click logic is done, this just sets the value to the number
+        // when numbers are not null, on the second click, this concatenates the number
+        if (firstNumber == null) {
+            firstNumber = num;
+            result.innerHTML = num;
+        } else if (secondNumber == null) {
+            secondNumber = num;
+            result.innerHTML = num;
+        } else if (firstNumber != null) {
+            result.innerHTML = currentResult + num.toString();
+            firstNumber = parseInt(currentResult + num.toString());
+        } else if (secondNumber != null) {
+            result.innerHTML = currentResult + num.toString();
+            secondNumber = parseInt(currentResult + num.toString());
         }
     })
 }
@@ -73,11 +73,21 @@ for (let i = 0; i < 10; i++) {
 function bindOperatorButton(string) {
     let button = document.querySelector('#' + string);
     button.addEventListener('click', (e) => {
+        // if operator is not blank that means the user has already
+        // ran one calculation, run operate command
+        // this lets the user chain operations together
+        let result;
+        if (operator != '') {
+            result = operate(operator, firstNumber, secondNumber);
+            firstNumber = result;
+            secondNumber = null;
+        } else {
+            result = 0;
+        }
         operator = string;
-        operatorPressed = true;
         // clear result back to 0
         // this allows user to enter a second number
-        document.querySelector('#result').innerHTML = 0;
+        document.querySelector('#result').innerHTML = result;
     });
 }
 
@@ -104,12 +114,11 @@ let clearButton = document.querySelector('#clear');
 clearButton.addEventListener('click', (e) => {
     let result = document.querySelector('#result');
     if (operator == '') {
-        firstNumber = 0;
-        secondNumber = 0;
-        operatorPressed = false;
+        firstNumber = null;
+        secondNumber = null;
         result.innerHTML = 0;
     } else {
-        secondNumber = 0;
+        secondNumber = null;
         result.innerHTML = 0;
     }
 });
