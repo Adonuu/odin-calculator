@@ -101,6 +101,7 @@ let equalsButton = document.querySelector('#equals');
 equalsButton.addEventListener('click', (e) => {
     let result = operate(operator, firstNumber, secondNumber);
     document.querySelector('#result').innerHTML = result;
+    // reset the operator since we are not chaining
     operator = '';
     // set firstNumber equal to result so we can continue on
     firstNumber = result;
